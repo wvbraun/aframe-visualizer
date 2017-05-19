@@ -5,14 +5,24 @@
   "dependencies": {
     "aframe": "^0.5.0",
     "aframe-animation-component": "^3.2.5",
+    "aframe-entity-generator-component": "^3.0.1",
+    "aframe-layout-component": "^4.1.0",
     "aframe-particle-system-component": "^1.0.9",
     "aframe-react": "^4.2.4",
     "babel-polyfill": "^6.23.0",
+    "keymirror": "^0.1.1",
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "react-key-handler": "^0.3.0",
+    "react-redux": "^5.0.5",
+    "react-router-dom": "^4.1.1",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "redux-immutable-state-invariant": "^2.0.0",
+    "redux-mock-store": "^1.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
