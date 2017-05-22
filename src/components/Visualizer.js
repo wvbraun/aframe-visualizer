@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Entity, Scene } from 'aframe-react';
 import 'aframe';
 import 'aframe-animation-component';
 import 'aframe-layout-component';
 import 'aframe-particle-system-component';
 import 'aframe-entity-generator-component';
+import './aframe-frequency-bars-component';
+import './aframe-key-events-component';
 import 'babel-polyfill';
+import { Entity, Scene } from 'aframe-react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 const STATES = [
   'ENDED',
@@ -47,7 +49,7 @@ class Visualizer extends Component {
       isPlaying: false,
       ctx: null,
       analyser: null,
-      frequencyData: 0,
+      frequencyData: null,
       sourceNode: null,
       levels: null,
       waveform: null,
@@ -533,23 +535,24 @@ class Visualizer extends Component {
     });
   }
 
-  _onKeyUp = (e) => {
-    console.log(1);
-    if (e.keyCode === 32) {
+  _onKeyDown = (evt) => {
+    if (evt.detail.key === ' ') {
       this._onResolvePlayState();
     }
   }
 
   render () {
-    const { progress } = this.state;
+    const { progress, frequencyData, options } = this.state;
     const { model } = this.props;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
     const events = {
-      keyup: this._onKeyUp,
-      click: this._onResolvePlayState,
+      keydown: this._onKeyDown,
+      // click: this._onResolvePlayState,
     };
     // scale-y-color="from: 20 10 10; to: 195 56 590; maxScale: 15">
     return (
-      <Scene events={events}>
+      <Scene events={events} key-events>
         <a-assets>
           <a-mixin
             id="bar"
@@ -557,6 +560,7 @@ class Visualizer extends Component {
             material="color: red"
           ></a-mixin>
           <audio
+            id="audio"
             ref={el => this.audio = el}
             className='visualizer__audio'
             src={model.src}
@@ -564,28 +568,34 @@ class Visualizer extends Component {
           ></audio>
         </a-assets>
 
+        <Entity particle-system={{preset: 'snow', particleCount: 2000}}/>
+
         <Entity
-          entity-generator="mixin: bar; num: 256"
-          layout="type: circle; radius: 10"
+          frequency-bars="mixin: bar"
+          layout="type: circle; radius: 15"
           rotation="90 180 0"
         />
 
         <Entity primitive="a-light" type="ambient" color="#222"/>
-        <Entity primitive="a-light" type="point" intensity="2" position="0 1 0"/>
-        <Entity primitive='a-sky' color='#222' />
+
         <Entity
+          primitive="a-light"
+          type="point"
+          intensity="2"
+          position="0 1 0"
+        />
+
+        <Entity primitive='a-sky' color='#222' />
+
+        <Entity
+          id='ground'
           primitive='a-circle'
           color='#333'
           opacity='0.8'
           rotation='-90 0 0'
-          radius='12'
+          radius='30'
           roughness='1'
         />
-        <Entity particle-system={{preset: 'snow', particleCount: 2000}}/>
-
-        <Entity primitive="a-camera">
-          <Entity primitive="a-cursor" animation__click={{property: 'scale', startEvents: 'click', from: '0.1 0.1 0.1', to: '1 1 1', dur: 150}}/>
-        </Entity>
       </Scene>
     );
   }

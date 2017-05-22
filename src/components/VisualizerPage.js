@@ -11,7 +11,7 @@ class VisualizerPage extends Component {
 
     //<img src={logo} className="App-logo" alt="logo" />
     return (
-      <div>
+      <div id='scene-container'>
         {tracks[1] &&
           <Visualizer
             className="audio-visualizer"
