@@ -5,6 +5,8 @@ import 'aframe-particle-system-component';
 import 'aframe-entity-generator-component';
 import './aframe-frequency-bars-component';
 import './aframe-key-events-component';
+import './aframe-audioanalyser-component';
+import './aframe-audioanalyser-levels-scale';
 import 'babel-polyfill';
 import { Entity, Scene } from 'aframe-react';
 import React, { Component } from 'react';
@@ -74,33 +76,20 @@ class Visualizer extends Component {
 
   componentWillMount () {
     //window.addEventListener('resize', this._onResize, true);
-    this._setContext().then(() => {
+    //this._setContext();
+    /*
+    .then(() => {
       this._setAnalyser();
     }).then(() => {
       this._setFrequencyData();
     }).catch((error) => {
       this._onDisplayError(error);
     });
+    */
   }
 
   componentDidMount () {
     this._extend().then(() => {
-      this._setSourceNode();
-    /*
-    }).then(() => {
-      this._setCanvasContext();
-    }).then(() => {
-      this._setCanvasStyles();
-    }).then(() => {
-      this._setParticles();
-    */
-    }).then(() => {
-      /*
-      this._onRender({
-        renderText: this.state.extensions.renderText,
-        renderTime: this.state.extensions.renderTime
-      });
-      */
       this.state.options.autoplay && this._onResolvePlayState();
     }).catch((error) => {
       this._onDisplayError(error);
@@ -118,7 +107,7 @@ class Visualizer extends Component {
   }
 
   componentWillUnmount () {
-    this.state.ctx.close();
+    //this.state.ctx.close();
   }
 
   _onDisplayError = (error) => {
@@ -226,71 +215,6 @@ class Visualizer extends Component {
     });
   }
 
-  _setRequestAnimationFrame = () => {
-    return new Promise((resolve, reject) => {
-      const requestAnimationFrame = (() => {
-        return window.requestAnimationFrame ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame ||
-          function (callback) {
-            window.setTimeout(callback, 1000 / 60);
-          };
-      })();
-
-      this.setState({ requestAnimationFrame }, () => {
-        return resolve();
-      });
-    });
-  }
-
-  _setCanvasStyles = () => {
-    const { width, height } = this.backgroundCanvas;
-    const { canvasCtx } = this.state;
-    const { foregroundCtx, particleCtx, backgroundCtx } = canvasCtx;
-    const { barColor, shadowBlur, shadowColor, font } = this.state.options;
-
-    let foregroundGradient = foregroundCtx.createLinearGradient(0, 0, 0, 300);
-    foregroundGradient.addColorStop(1, barColor);
-
-    const volume = this.audio.volume / 1000;
-    const r = Math.round(200 + (Math.sin(volume) + 1) * 28);
-    const g = Math.round(volume * 2);
-    const b = Math.round(volume * 8);
-    const a = 0.4; // 1 + Math.sin(volume + 3 * Math.PI/2);
-
-    let backgroundGradient = backgroundCtx.createRadialGradient(width/2, height/2, volume, width/2, height/2, width-Math.min(Math.pow(volume, 2.7), width-20));
-    backgroundGradient.addColorStop(0, 'rgba(0,0,0,0)');
-    backgroundGradient.addColorStop(0.8,`rgba(${r}, ${g}, ${b}, ${a})`);
-
-    const fgCtx = Object.assign(foregroundCtx, {
-      fillStyle: foregroundGradient,
-      shadowBlur: shadowBlur,
-      shadowColor: shadowColor,
-      font: font.join(' '),
-      textAlign: 'center'
-    });
-
-    const bgCtx = Object.assign(backgroundCtx, {
-      fillStyle: backgroundGradient,
-    });
-
-    return new Promise((resolve, reject) => {
-      this.setState({
-        gradient: {
-          foregroundGradient,
-          backgroundGradient,
-        },
-        canvasCtx: {
-          particleCtx,
-          foregroundCtx: fgCtx,
-          backgroundCtx: bgCtx,
-        },
-      }, () => {
-        return resolve();
-      });
-    });
-  }
-
   _onChange = (state) => {
     const { onChange } = this.props;
 
@@ -307,232 +231,29 @@ class Visualizer extends Component {
     }
   }
 
-  _onAudioLoad = () => {
-    /*
-    const { canvasCtx } = this.state;
-    canvasCtx.fillText('Loading...', this.canvas.width / 2 + 10, this.canvas.height / 2 - 25);
-    this._onChange(STATES[3]);
-    this._onAudioPlay();
-    */
-
-    this._onRenderFrame();
-    return this;
-  }
-
   _onAudioPause = () => {
-    const { ctx } = this.state;
-
     this.setState({ isPlaying: false }, () => {
-      ctx.suspend().then(() => {
-        this._onChange(STATES[2]);
-      });
+      this.audio.pause();
     });
 
     return this;
   }
 
   _onAudioStop = () => {
-    const { foregroundCanvas, particleCanvas, backgroundCanvas } = this;
-    const { canvasCtx, ctx } = this.state;
-    const { foregroundCtx, particleCtx, backgroundCtx } = canvasCtx;
-
     return new Promise((resolve, reject) => {
-      clearInterval(this.state.interval);
-      this.state.sourceNode.disconnect();
-      foregroundCtx.clearRect(
-      -foregroundCanvas.width,
-      -foregroundCanvas.height,
-      foregroundCanvas.width * 2,
-      foregroundCanvas.height * 2);
-
-    particleCtx.clearRect(
-      //-particleCanvas.width / 2,
-      //-particleCanvas.height / 2,
-      0, 0,
-      particleCanvas.width,
-      particleCanvas.height);
-
-      //foregroundCtx.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
-      //particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-      backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-      this._onChange(STATES[0]);
-
-      ctx.resume().then(() => {
-        this._setSourceNode();
-      }).then(() => {
-        this.setState({
-          isPlaying: false,
-        }, () => {
-          return resolve();
-        });
+      this.setState({ isPlaying: false, }, () => {
+        return resolve();
       });
     });
   }
 
   _onAudioPlay = () => {
-    const { ctx } = this.state;
-
     this.setState({ isPlaying: true }, () => {
-      this._onChange(STATES[1]);
-
-      if (ctx.state === 'suspended') {
-        ctx.resume().then(() => {
-          //return this._onRenderFrame();
-        });
-      }
-
       this.audio.play();
       //this._onRenderFrame();
     });
 
-
     return this;
-  }
-
-  _onRenderFrame = (init) => {
-    const {
-      analyser,
-      extensions,
-      frequencyData,
-    } = this.state;
-
-    if (init || this.state.isPlaying) {
-      analyser.getByteFrequencyData(frequencyData);
-      this._onRender(extensions);
-    }
-
-    return this;
-  }
-
-  _onRender = (extensions) => {
-    const { canvasCtx } = this.state;
-    const { foregroundCtx, particleCtx, backgroundCtx } = canvasCtx;
-    const { foregroundCanvas, particleCanvas, backgroundCanvas } = this;
-
-    foregroundCtx.clearRect(
-      //-foregroundCanvas.width,
-      //-foregroundCanvas.height,
-      0, 0,
-      foregroundCanvas.width * 2,
-      foregroundCanvas.height * 2);
-
-    particleCtx.clearRect(
-      //-particleCanvas.width / 2,
-      //-particleCanvas.height / 2,
-      0, 0,
-      particleCanvas.width,
-      particleCanvas.height);
-
-    //foregroundCtx.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
-    //particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-    backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-
-    Object.keys(extensions).map((extension) => {
-      return extensions[extension] &&
-      extensions[extension].call(this, this);
-    });
-  }
-
-  _onRenderTimeDefault = () => {
-    const { audio, foregroundCanvas } = this;
-    const { width, height } = foregroundCanvas;
-    const { foregroundCtx } = this.state.canvasCtx;
-
-    const cx = width / 2;
-    const cy = height / 4;
-
-    let time = secondsToTime(audio.currentTime);
-    if (audio.duration) {
-      this.setState({ progress: audio.currentTime / audio.duration });
-    }
-    foregroundCtx.fillText(time, cx + 10, cy + 40);
-    return this;
-  }
-
-  _onRenderTextDefault = () => {
-    const { foregroundCanvas } = this;
-    const { canvasCtx, model } = this.state;
-    const { foregroundCtx } = canvasCtx;
-    const { font } = this.state.options;
-
-    const cx = foregroundCanvas.width / 2;
-    const cy = foregroundCanvas.height / 4;
-    const fontAdjustment = 6;
-    const alignAdjustment = 8;
-
-    foregroundCtx.textBaseline = 'top';
-    foregroundCtx.fillText(`by ${model.artist}`, cx + alignAdjustment, cy);
-    foregroundCtx.font = `${parseInt(font[0], 10) + fontAdjustment}px ${font[1]}`;
-    foregroundCtx.textBaseline = 'bottom';
-    foregroundCtx.fillText(model.title, cx + alignAdjustment, cy);
-    foregroundCtx.font = font.join(' ');
-
-    return this;
-  }
-
-  _drawFreqBar = (freq, canvasCtx) => {
-    const { angle, tx, ty, x, y, w, h } = freq;
-
-    canvasCtx.save();
-    canvasCtx.translate(tx, ty);
-    canvasCtx.rotate(angle);
-    canvasCtx.fillRect(x, y, w, h);
-    canvasCtx.restore();
-  }
-
-  _onRenderFreqBars = () => {
-    const { width, height } = this.foregroundCanvas;
-    const { frequencyData, canvasCtx, options } = this.state;
-    const { foregroundCtx } = canvasCtx;
-    const { barWidth, barHeight, barSpacing } = options;
-
-    const radiusReduction = 70;
-    const amplitudeReduction = 6;
-
-    const cx = width / 2;
-    const cy = height / 4;
-    const radius = Math.min(cx, cy) - radiusReduction;
-    const maxBarNum = Math.floor((radius * 2 * Math.PI) / (barWidth + barSpacing));
-    const slicedPercent = Math.floor((maxBarNum * 25) / 100);
-    const barNum = maxBarNum - slicedPercent;
-    const freqJump = Math.floor(frequencyData.length / maxBarNum);
-
-    [...Array(barNum).keys()].map(i => {
-      const amplitude = frequencyData[i * freqJump];
-      const theta = (i * 2 * Math.PI ) / maxBarNum;
-      const delta = (3 * 45 - barWidth) * Math.PI / 180;
-      const freq = {
-        angle: theta - delta,
-        tx: cx + barSpacing,
-        ty: cy + barSpacing,
-        x: 0,
-        y: radius - (amplitude / 12 - barHeight),
-        w: barWidth,
-        h: amplitude / amplitudeReduction + barHeight,
-      };
-
-      return this._drawFreqBar(freq, foregroundCtx);
-    });
-
-    return Promise.resolve();
-  }
-
-  _onRenderBackground = () => {
-    const { width, height } = this.backgroundCanvas;
-    const { backgroundCtx } = this.state.canvasCtx;
-
-    //backgroundCtx.clearRect(0, 0, width, height);
-    backgroundCtx.fillRect(0, 0, width, height);
-
-    return Promise.resolve();
-  }
-
-  _onRenderStyleDefault = () => {
-    return new Promise((resolve, reject) => {
-      this._onRenderFreqBars
-      //.then(this._onRenderBackground)
-      .then(resolve);
-    });
   }
 
   _onKeyDown = (evt) => {
@@ -552,7 +273,7 @@ class Visualizer extends Component {
     };
     // scale-y-color="from: 20 10 10; to: 195 56 590; maxScale: 15">
     return (
-      <Scene events={events} key-events>
+      <Scene>
         <a-assets>
           <a-mixin
             id="bar"
@@ -571,6 +292,8 @@ class Visualizer extends Component {
         <Entity particle-system={{preset: 'snow', particleCount: 2000}}/>
 
         <Entity
+          audioanalyser="src: #audio; smoothingTimeConstant: 0.9"
+          audioanalyser-levels-scale="max: 50; multiplier: 0.06"
           frequency-bars="mixin: bar"
           layout="type: circle; radius: 15"
           rotation="90 180 0"
