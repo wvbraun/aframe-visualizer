@@ -2,11 +2,12 @@ import 'aframe';
 import 'aframe-animation-component';
 import 'aframe-layout-component';
 import 'aframe-particle-system-component';
-import 'aframe-entity-generator-component';
 import './aframe-frequency-bars-component';
 import './aframe-key-events-component';
 import './aframe-audioanalyser-component';
 import './aframe-audioanalyser-levels-scale';
+import './aframe-audio-player-component';
+import './aframe-audio-metadata-component';
 import 'babel-polyfill';
 import { Entity, Scene } from 'aframe-react';
 import React, { Component } from 'react';
@@ -55,15 +56,8 @@ class Visualizer extends Component {
       sourceNode: null,
       levels: null,
       waveform: null,
-      gradient: {
-        foregoundGradient: null,
-        backgroundGradient: null,
-      },
-      canvasCtx: {
-        foregroundCtx: null,
-        particleCtx: null,
-        backgroundCtx: null,
-      },
+      gradient: null,
+      canvasCtx: null,
       interval: null,
       duration: null,
       options: OPTIONS_DEFAULT,
@@ -89,11 +83,18 @@ class Visualizer extends Component {
   }
 
   componentDidMount () {
-    this._extend().then(() => {
+    this._extend()
+    //.then(this._setCanvasContext)
+    .then(() => {
+      /*
+      this._onRender({
+        renderText: this.state.extensions.renderText,
+        renderTime: this.state.extensions.renderTime
+      });
+      */
       this.state.options.autoplay && this._onResolvePlayState();
-    }).catch((error) => {
-      this._onDisplayError(error);
-    });
+    })
+    .catch(this._onDisplayError);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -134,11 +135,7 @@ class Visualizer extends Component {
   }
 
   _setCanvasContext = () => {
-    const canvasCtx = {
-      foregroundCtx: this.foregroundCanvas.getContext('2d'),
-      particleCtx: this.particleCanvas.getContext('2d'),
-      backgroundCtx: this.backgroundCanvas.getContext('2d'),
-    };
+    const canvasCtx = this.canvas.getContext('2d');
 
     return new Promise((resolve, reject) => {
       this.setState({ canvasCtx }, () => {
@@ -262,6 +259,54 @@ class Visualizer extends Component {
     }
   }
 
+  _onRender = (extensions) => {
+    const { canvasCtx } = this.state;
+    const { width, height } = this.canvas;
+
+    canvasCtx.clearRect(0, 0, width, height);
+
+    Object.keys(extensions).map((extension) => {
+      return extensions[extension] &&
+      extensions[extension].call(this, this);
+    });
+  }
+
+  _onRenderTimeDefault = () => {
+    const { audio } = this;
+    const { canvasCtx } = this.state;
+    const { width, height } = this.canvas;
+
+    const cx = width / 2;
+    const cy = height / 4;
+
+    let time = secondsToTime(audio.currentTime);
+    if (audio.duration) {
+      this.setState({ progress: audio.currentTime / audio.duration });
+    }
+    canvasCtx.fillText(time, cx + 10, cy + 40);
+    return this;
+  }
+
+  _onRenderTextDefault = () => {
+    const { canvasCtx, model } = this.state;
+    const { font } = this.state.options;
+    const { width, height } = this.canvas;
+
+    const cx = width / 2;
+    const cy = height / 4;
+    const fontAdjustment = 6;
+    const alignAdjustment = 8;
+
+    canvasCtx.textBaseline = 'top';
+    canvasCtx.fillText(`by ${model.artist}`, cx + alignAdjustment, cy);
+    canvasCtx.font = `${parseInt(font[0], 10) + fontAdjustment}px ${font[1]}`;
+    canvasCtx.textBaseline = 'bottom';
+    canvasCtx.fillText(model.title, cx + alignAdjustment, cy);
+    canvasCtx.font = font.join(' ');
+
+    return this;
+  }
+
   render () {
     const { progress, frequencyData, options } = this.state;
     const { model } = this.props;
@@ -271,54 +316,94 @@ class Visualizer extends Component {
       keydown: this._onKeyDown,
       // click: this._onResolvePlayState,
     };
-    // scale-y-color="from: 20 10 10; to: 195 56 590; maxScale: 15">
-    return (
-      <Scene>
-        <a-assets>
-          <a-mixin
-            id="bar"
-            geometry="primitive: box"
-            material="color: red"
-          ></a-mixin>
-          <audio
-            id="audio"
-            ref={el => this.audio = el}
-            className='visualizer__audio'
-            src={model.src}
-            crossOrigin="anonymous"
-          ></audio>
-        </a-assets>
 
-        <Entity particle-system={{preset: 'snow', particleCount: 2000}}/>
+    const particles = {
+      preset: 'snow',
+      particleCount: 3000,
+      size: 0.5,
+    };
 
-        <Entity
-          audioanalyser="src: #audio; smoothingTimeConstant: 0.9"
-          audioanalyser-levels-scale="max: 50; multiplier: 0.06"
-          frequency-bars="mixin: bar"
-          layout="type: circle; radius: 15"
-          rotation="90 180 0"
-        />
+    const text = {
+      color: 'white',
+      value: `${model.artist} - ${model.title}`,
+      align: 'center',
+      width: 10,
+      height: 10,
+      letterSpacing: 5,
+    };
 
-        <Entity primitive="a-light" type="ambient" color="#222"/>
+    /*
+      scale-y-color='from: 20 10 10; to: 195 56 590; maxScale: 15'>
+      rotation='90 180 0'
 
-        <Entity
-          primitive="a-light"
-          type="point"
-          intensity="2"
-          position="0 1 0"
-        />
-
-        <Entity primitive='a-sky' color='#222' />
-
-        <Entity
+      <Entity
+        primitive='a-light'
+        type='point'
+        intensity='2'
+        position='0 1 0'
+      />
+      <Entity
           id='ground'
           primitive='a-circle'
-          color='#333'
+          color='#000'
           opacity='0.8'
           rotation='-90 0 0'
           radius='30'
           roughness='1'
         />
+    */
+    return (
+      <Scene audio-player='audio: #visualizer-audio' stats>
+        <a-assets>
+          <a-mixin
+            id='bar'
+            geometry='primitive: box'
+            material='color: #c3383b'
+          ></a-mixin>
+          <audio
+            id='visualizer-audio'
+            ref={el => this.audio = el}
+            className='visualizer__audio'
+            src={model.src}
+            crossOrigin='anonymous'
+          ></audio>
+          <canvas
+            id='metadata-canvas'
+            crossOrigin='anonymous'
+            width={width}
+            height={height}
+          ></canvas>
+        </a-assets>
+
+        <Entity
+          particle-system={particles}
+        />
+
+        <Entity
+          text={text}
+          position='0 1 -5'
+        />
+
+        <Entity
+          audioanalyser='src: #visualizer-audio; smoothingTimeConstant: 0.9'
+          audioanalyser-levels-scale='max: 50; multiplier: 0.06'
+          frequency-bars='mixin: bar'
+          layout='type: circle; radius: 15'
+          rotation='90 180 0'
+          audio-metadata='src: #metadata-canvas; audio: #visualizer-audio'
+        />
+
+        <Entity primitive='a-light' type='ambient' color='#333'/>
+
+        <Entity
+          primitive='a-light'
+          type='directional'
+          intensity='2'
+          position='-1 1 0'
+        />
+
+        <Entity primitive='a-sky' color='#000' />
+
       </Scene>
     );
   }

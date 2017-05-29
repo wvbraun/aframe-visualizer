@@ -20,7 +20,7 @@ AFRAME.registerComponent('frequency-bars', {
     const radius = Math.min(cx, cy) - radiusReduction;
     const maxNumBars = Math.floor((radius*2*Math.PI)/(barWidth + barSpacing));
     const slicedPercent = Math.floor((maxNumBars * 25) / 100);
-    const numBars = maxNumBars - slicedPercent;
+    const numBars = 128; //maxNumBars - slicedPercent;
 
     for (let i = 0; i < numBars; ++i) {
       const theta = (i * 2 * Math.PI ) / maxNumBars;

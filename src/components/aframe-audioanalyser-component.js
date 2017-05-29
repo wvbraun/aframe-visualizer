@@ -1,9 +1,5 @@
 /* global AFRAME */
 
-if (typeof AFRAME === 'undefined') {
-  throw new Error('Component attempted to register before AFRAME was available.');
-}
-
 // Single audio context.
 var context;
 
@@ -61,13 +57,6 @@ AFRAME.registerComponent('audioanalyser', {
     this.levels = null;
     this.waveform = null;
     this.volume = 0;
-    this.listeners = {
-      keydown: this.onKeyDown.bind(this),
-    };
-    this.onResolvePlayState = this.onResolvePlayState.bind(this);
-    this.playAudio = this.playAudio.bind(this);
-    this.pauseAudio = this.pauseAudio.bind(this);
-
   },
 
   update: function () {
@@ -139,46 +128,6 @@ AFRAME.registerComponent('audioanalyser', {
         }
       }
     }
-  },
-
-  play: function () {
-    window.addEventListener('keydown', this.listeners.keydown, false);
-  },
-
-  pause: function () {
-    window.removeEventListener('keydown', this.listeners.keydown);
-  },
-
-  onKeyDown: function (evt) {
-    if (evt.key === ' ') {
-      this.onResolvePlayState();
-    }
-  },
-
-  onResolvePlayState: function () {
-    let audio = this.data.src;
-    if (!audio) {
-      return;
-    }
-
-    if (audio.paused) {
-      if (context.state === 'suspended') {
-        context.resume();
-      }
-      audio.play();
-    } else {
-      context.suspend();
-      audio.pause();
-    }
-
-  },
-
-  playAudio: function () {
-
-  },
-
-  pauseAudio: function () {
-
   },
 
 });

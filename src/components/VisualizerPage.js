@@ -6,7 +6,7 @@ class VisualizerPage extends Component {
   render() {
     const { tracks } = this.props;
     const options = {
-      autoplay: true,
+      autoplay: false,
     };
 
     //<img src={logo} className="App-logo" alt="logo" />
