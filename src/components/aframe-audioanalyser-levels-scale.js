@@ -18,7 +18,7 @@ AFRAME.registerComponent('audioanalyser-levels-scale', {
     if (!levels) { return; }
 
     children = this.el.children;
-    for (var i = 0; i < children.length; i++) {
+    for (var i = 0; i < children.length; ++i) {
       children[i].setAttribute('scale', {
         x: 1,
         y: 1,

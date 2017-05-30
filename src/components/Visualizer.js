@@ -353,7 +353,7 @@ class Visualizer extends Component {
         />
     */
     return (
-      <Scene audio-player='audio: #visualizer-audio' stats>
+      <Scene id='scene-container' audio-player='audio: #visualizer-audio'>
         <a-assets>
           <a-mixin
             id='bar'
@@ -386,7 +386,7 @@ class Visualizer extends Component {
 
         <Entity
           audioanalyser='src: #visualizer-audio; smoothingTimeConstant: 0.9'
-          audioanalyser-levels-scale='max: 50; multiplier: 0.06'
+          audioanalyser-levels-scale='max: 100; multiplier: 0.04'
           frequency-bars='mixin: bar'
           layout='type: circle; radius: 15'
           rotation='90 180 0'
@@ -397,12 +397,12 @@ class Visualizer extends Component {
 
         <Entity
           primitive='a-light'
-          type='directional'
-          intensity='2'
-          position='-1 1 0'
+          type='point'
+          intensity='1'
+          position='0 1 0'
         />
 
-        <Entity primitive='a-sky' color='#000' />
+      <Entity primitive='a-sky' color='#000' />
 
       </Scene>
     );
