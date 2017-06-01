@@ -32,28 +32,32 @@ AFRAME.registerComponent('audio-player', {
   },
 
   attachEventListeners: function () {
-    const { events } = this.data;
+    const { audio, events } = this.data;
     if (events) {
       for (let i = 0; i < events.length; ++i) {
         window.addEventListener(events[i], this.eventHandler, false);
       }
     }
 
-    this.audio.addEventListener('loadeddata', function() {
-      this.loaded = true;
-    }, false);
+    if (audio) {
+      audio.addEventListener('loadeddata', function() {
+        this.loaded = true;
+      }, false);
+    }
   },
 
   removeEventListeners: function () {
-    const { events } = this.data;
+    const { audio, events } = this.data;
     if (events) {
       for (let i = 0; i < events.length; ++i) {
         window.removeEventListener(events[i], this.eventHandler);
       }
     }
-    this.audio.removeEventListener('loadedData', function() {
-      this.loaded = false;
-    });
+    if (audio) {
+      audio.removeEventListener('loadedData', function() {
+        this.loaded = false;
+      });
+    }
   },
 
   eventHandler: function (evt) {
