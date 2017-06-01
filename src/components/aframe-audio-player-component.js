@@ -64,15 +64,18 @@ AFRAME.registerComponent('audio-player', {
     if (audio.paused) {
       const promise = audio.play();
       if (promise) {
-        console.log(1);
-        promise.catch((err) => {
+        promise
+        .then(console.log(1));
+        .catch((err) => {
           console.log(err);
         })
       }
     } else {
       const promise = audio.pause();
       if (promise) {
-        promise.catch((err) => {
+        promise
+        .then(console.log(2));
+        .catch((err) => {
           console.log(err);
         })
       }
