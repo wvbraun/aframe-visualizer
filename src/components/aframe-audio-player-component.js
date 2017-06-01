@@ -61,10 +61,21 @@ AFRAME.registerComponent('audio-player', {
       return;
     }
 
+
     if (audio.paused) {
-      audio.play();
+      const promise = audio.play();
+      if (promise) {
+        promise.catch((err) => {
+          console.log(err);
+        })
+      }
     } else {
-      audio.pause();
+      const promise = audio.pause();
+      if (promise) {
+        promise.catch((err) => {
+          console.log(err);
+        })
+      } 
     }
 
   },
