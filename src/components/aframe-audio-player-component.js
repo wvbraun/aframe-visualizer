@@ -68,6 +68,8 @@ AFRAME.registerComponent('audio-player', {
         promise.catch((err) => {
           console.log(err);
         })
+      } else {
+        console.log('what');
       }
     } else {
       const promise = audio.pause();
@@ -75,7 +77,9 @@ AFRAME.registerComponent('audio-player', {
         promise.catch((err) => {
           console.log(err);
         })
-      } 
+      } else {
+        console.log('wut');
+      }
     }
 
   },
