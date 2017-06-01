@@ -16,6 +16,7 @@ AFRAME.registerComponent('audio-player', {
   },
 
   init: function () {
+    this.loaded = false;
     this.attachEventListeners = this.attachEventListeners.bind(this);
     this.removeEventListeners = this.removeEventListeners.bind(this);
     this.eventHandler = this.eventHandler.bind(this);
@@ -37,6 +38,10 @@ AFRAME.registerComponent('audio-player', {
         window.addEventListener(events[i], this.eventHandler, false);
       }
     }
+
+    this.audio.addEventListener('loadeddata', function() {
+      this.loaded = true;
+    }, false);
   },
 
   removeEventListeners: function () {
@@ -46,10 +51,13 @@ AFRAME.registerComponent('audio-player', {
         window.removeEventListener(events[i], this.eventHandler);
       }
     }
+    this.audio.removeEventListener('loadedData', function() {
+      this.loaded = false;
+    });
   },
 
   eventHandler: function (evt) {
-    if (evt.key === ' ') {
+    if (evt.key === ' ' || evt.key === 'k') {
       this.onResolvePlayState();
     }
   },
