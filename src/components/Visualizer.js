@@ -2,6 +2,7 @@ import 'aframe';
 import 'aframe-animation-component';
 import 'aframe-layout-component';
 import 'aframe-particle-system-component';
+import 'aframe-stats-in-vr-component';
 import './aframe-frequency-bars-component';
 import './aframe-key-events-component';
 import './aframe-audioanalyser-component';
@@ -320,7 +321,7 @@ class Visualizer extends Component {
     const particles = {
       preset: 'snow',
       particleCount: 3000,
-      size: 0.5,
+      size: 0.1,
     };
 
     const text = {
@@ -353,7 +354,11 @@ class Visualizer extends Component {
         />
     */
     return (
-      <Scene id='scene-container' audio-player='audio: #visualizer-audio'>
+      <Scene
+        id='scene-container'
+        audio-player='audio: #visualizer-audio'
+        stats-in-vr
+      >
         <a-assets>
           <a-mixin
             id='bar'

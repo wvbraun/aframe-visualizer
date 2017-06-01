@@ -43,9 +43,9 @@ export function loadTracks() {
   };
 }
 
-export function addTracks(tracks) {
+export function addTrack(track) {
   return (dispatch) => {
-    return VisualizerApi.addTracks(tracks)
+    return VisualizerApi.addTrack(track)
       .then((addedTracks) => {
         dispatch(addTracksSuccess(addedTracks));
       })

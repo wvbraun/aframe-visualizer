@@ -1,5 +1,12 @@
 @import '../../node_modules/material-components-web/dist/material-components-web.css';
 
+@media (min-width: 480px) {
+  .rs-base {
+    top: 60px;
+    background-color: rgba(0,0,0,0);
+  }
+}
+
 html {
   display: block;
 }

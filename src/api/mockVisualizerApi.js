@@ -28,10 +28,10 @@ class VisualizerApi {
     track = Object.assign({}, track);
 
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          tracks.push(track);
-          resolve(track);
-        }, delay);
+      setTimeout(() => {
+        tracks.push(track);
+        resolve(track);
+      }, delay);
     });
   }
 }
