@@ -65,7 +65,7 @@ AFRAME.registerComponent('audio-player', {
       const promise = audio.play();
       if (promise) {
         promise
-        .then(console.log(1))
+        .then(console.log('play'))
         .catch((err) => {
           console.log(err);
         })
@@ -74,7 +74,7 @@ AFRAME.registerComponent('audio-player', {
       const promise = audio.pause();
       if (promise) {
         promise
-        .then(console.log(2))
+        .then(console.log('pause'))
         .catch((err) => {
           console.log(err);
         })
