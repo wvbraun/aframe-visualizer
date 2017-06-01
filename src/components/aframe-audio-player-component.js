@@ -69,6 +69,7 @@ AFRAME.registerComponent('audio-player', {
   onResolvePlayState: function () {
     let { audio } = this.data;
     if (!audio || audio.readyState < 1) {
+      console.log(1);
       return;
     }
 
