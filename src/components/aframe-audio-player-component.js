@@ -32,6 +32,7 @@ AFRAME.registerComponent('audio-player', {
   },
 
   attachEventListeners: function () {
+    let th = this;
     const { audio, events } = this.data;
     if (events) {
       for (let i = 0; i < events.length; ++i) {
@@ -41,12 +42,13 @@ AFRAME.registerComponent('audio-player', {
 
     if (audio) {
       audio.addEventListener('loadeddata', function() {
-        this.loaded = true;
+        th.loaded = true;
       }, false);
     }
   },
 
   removeEventListeners: function () {
+    let th = this;
     const { audio, events } = this.data;
     if (events) {
       for (let i = 0; i < events.length; ++i) {
@@ -54,8 +56,8 @@ AFRAME.registerComponent('audio-player', {
       }
     }
     if (audio) {
-      audio.removeEventListener('loadedData', function() {
-        this.loaded = false;
+      audio.removeEventListener('loadeddata', function() {
+        th.loaded = false;
       });
     }
   },
@@ -68,7 +70,7 @@ AFRAME.registerComponent('audio-player', {
 
   onResolvePlayState: function () {
     let { audio } = this.data;
-    if (!audio || audio.readyState < 1) {
+    if (!audio || !this.loaded) {
       console.log(1);
       return;
     }
