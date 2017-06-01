@@ -56,29 +56,17 @@ AFRAME.registerComponent('audio-player', {
 
   onResolvePlayState: function () {
     let { audio } = this.data;
-    if (!audio) {
+    if (!audio || audio.readyState < 1) {
       return;
     }
 
-
     if (audio.paused) {
-      const promise = audio.play();
-      if (promise) {
-        promise
-        .then(console.log('play'))
-        .catch((err) => {
-          console.log(err);
-        })
-      }
+      audio.play()
+      .catch((err) => {
+        console.log(err);
+      })
     } else {
-      const promise = audio.pause();
-      if (promise) {
-        promise
-        .then(console.log('pause'))
-        .catch((err) => {
-          console.log(err);
-        })
-      }
+      audio.pause()
     }
 
   },
