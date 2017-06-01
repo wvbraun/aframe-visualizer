@@ -49,7 +49,7 @@ AFRAME.registerComponent('audio-player', {
   },
 
   eventHandler: function (evt) {
-    if (evt.key === ' ') {
+    if (evt.key === ' ' || evt.key === 'k') {
       this.onResolvePlayState();
     }
   },
