@@ -36,6 +36,11 @@ class VisualizerPage extends Component {
       <div className='App'>
         {tracks[1] &&
           <div>
+            <VisualizerHeader
+              logo={logo2}
+              model={tracks[1]}
+              onDrop={this.addTracks}
+            />
             <Visualizer
               className="visualizer"
               model={tracks[1]}

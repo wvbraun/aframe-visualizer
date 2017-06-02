@@ -9,6 +9,8 @@ import './aframe-audioanalyser-component';
 import './aframe-audioanalyser-levels-scale';
 import './aframe-audio-player-component';
 import './aframe-audio-metadata-component';
+import './aframe-spotify-component';
+import './aframe-remove-on-event-component';
 import 'babel-polyfill';
 import { Entity, Scene } from 'aframe-react';
 import React, { Component } from 'react';
@@ -333,6 +335,12 @@ class Visualizer extends Component {
       letterSpacing: 5,
     };
 
+    const speechRecognitionText = {
+      color: 'white',
+      value: "Say out loud 'play <artist or song>'",
+      width: 3,
+    };
+
     /*
       scale-y-color='from: 20 10 10; to: 195 56 590; maxScale: 15'>
       rotation='90 180 0'
@@ -357,7 +365,6 @@ class Visualizer extends Component {
       <Scene
         id='scene-container'
         audio-player='audio: #visualizer-audio'
-        stats-in-vr
       >
         <a-assets>
           <a-mixin
@@ -390,12 +397,20 @@ class Visualizer extends Component {
         />
 
         <Entity
+          text={speechRecognitionText}
+          position='0.3 3 -3'
+          remove-on-event='el: #audio-analyser; event: spotify-play'
+        />
+
+        <Entity
+          id='audio-analyser'
           audioanalyser='src: #visualizer-audio; smoothingTimeConstant: 0.9'
           audioanalyser-levels-scale='max: 100; multiplier: 0.04'
           frequency-bars='mixin: bar'
           layout='type: circle; radius: 15'
           rotation='90 180 0'
           audio-metadata='src: #metadata-canvas; audio: #visualizer-audio'
+          spotify='src:#visualizer-audio'
         />
 
         <Entity primitive='a-light' type='ambient' color='#333'/>

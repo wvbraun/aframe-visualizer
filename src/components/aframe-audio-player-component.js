@@ -31,6 +31,7 @@ AFRAME.registerComponent('audio-player', {
     this.removeEventListeners();
   },
 
+  // TODO: win chromium not working
   attachEventListeners: function () {
     let th = this;
     const { audio, events } = this.data;
