@@ -365,6 +365,7 @@ class Visualizer extends Component {
       <Scene
         id='scene-container'
         audio-player='audio: #visualizer-audio'
+        stats
       >
         <a-assets>
           <a-mixin

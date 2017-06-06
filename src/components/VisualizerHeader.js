@@ -1,6 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import UploadModal from './common/UploadModal';
+import { Link } from 'react-router-dom';
+import spotifyLogin from './spotify-login.svg';
+
+
 
 const VisualizerHeader = ({ logo, model, onDrop }) => {
   const styles = {
@@ -9,6 +13,20 @@ const VisualizerHeader = ({ logo, model, onDrop }) => {
     },
     trackInfo: {
       textAlign: 'left',
+    },
+    spotifyLogin: {
+      minWidth: '64px',
+      height: '36px',
+      padding: '0 16px',
+      border: 'none',
+      borderRadius: '2px',
+      outline: 'none',
+      background: 'transparent',
+      textAlign: 'center',
+      textDecoration: 'none',
+      overflow: 'hidden',
+      verticalAlign: 'middle',
+      boxSizing: 'border-box',
     },
   };
   return (
@@ -23,6 +41,13 @@ const VisualizerHeader = ({ logo, model, onDrop }) => {
         styles={styles.button}
         onDrop={onDrop}
       />
+      <Link to='/login'>
+        <img
+          src={spotifyLogin} 
+          className='spotify-login-logo'
+          style={styles.spotifyLogin}
+        />
+      </Link>
     </div>
   );
 };

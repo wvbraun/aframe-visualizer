@@ -4,13 +4,6 @@ import spotifyApi from '../api/spotifyApi';
 
 //const spotifyApi = new Spotify();
 
-export function setTokens ({ accessToken, refreshToken }) {
-  if (accessToken) {
-    spotifyApi.setAccessToken(accessToken);
-  }
-  return { type: types.SPOTIFY_TOKENS, accessToken, refreshToken };
-}
-
 export function spotifyBegin () {
   return { type: types.SPOTIFY_ME_BEGIN };
 }
@@ -21,6 +14,14 @@ export function spotifySuccess(user) {
 
 export function spotifyFail(err) {
   return { type: types.SPOTIFY_ME_FAIL, err }
+}
+
+export function setTokens ({ accessToken, refreshToken }) {
+  if (accessToken) {
+    console.log(accessToken);
+    spotifyApi.setAccessToken(accessToken);
+  }
+  return { type: types.SPOTIFY_TOKENS, accessToken, refreshToken };
 }
 
 export function getUserInfo() {

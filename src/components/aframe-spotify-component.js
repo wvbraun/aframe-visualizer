@@ -1,7 +1,7 @@
 /* global AFRAME, annyang */
 
 import SpotifyWebApi from './spotify-web-api';
-// import SpotifyWebApi from 'spotify-web-api-node';
+//import SpotifyWebApi from 'spotify-web-api-node';
 
 let Spotify = new SpotifyWebApi();
 
