@@ -24,6 +24,7 @@ AFRAME.registerComponent('spotify', {
     annyang.start();
   },
 
+  // TODO: currently if previewUrl is null it errors, need to add failsafes
   searchTrack: function (query) {
     let el = this.el;
     let data = this.data;

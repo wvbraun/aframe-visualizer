@@ -102,7 +102,7 @@ AFRAME.registerComponent('audioanalyser', {
     if (data.enableVolume || data.enableBeatDetection) {
       var sum = 0;
       for (var i = 0; i < this.levels.length; i++) {
-        sum += this.levels[i];;
+        sum += this.levels[i];
       }
       this.volume = sum / this.levels.length;
     }
