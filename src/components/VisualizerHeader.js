@@ -5,8 +5,19 @@ import { Link } from 'react-router-dom';
 import spotifyLogin from './spotify-login.svg';
 
 
+// <Link to='/login'>
 
-const VisualizerHeader = ({ logo, model, onDrop }) => {
+/*
+<button onClick={onLogin}>
+        <img
+          src={spotifyLogin}
+          className='spotify-login-logo'
+          style={styles.spotifyLogin}
+        />
+      </button>
+*/
+
+const VisualizerHeader = ({ logo, model, onDrop, onLogin }) => {
   const styles = {
     button: {
       backgroundColor: '#c3383b',
@@ -41,13 +52,6 @@ const VisualizerHeader = ({ logo, model, onDrop }) => {
         styles={styles.button}
         onDrop={onDrop}
       />
-      <Link to='/login'>
-        <img
-          src={spotifyLogin} 
-          className='spotify-login-logo'
-          style={styles.spotifyLogin}
-        />
-      </Link>
     </div>
   );
 };
@@ -56,6 +60,7 @@ VisualizerHeader.propTypes = {
   logo: PropTypes.string,
   model: PropTypes.object.isRequired,
   onDrop: PropTypes.func.isRequired,
+  onLogin: PropTypes.func,
 };
 
 export default VisualizerHeader;

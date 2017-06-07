@@ -1,16 +1,27 @@
+
+/*
 import Spotify from 'spotify-web-api-node';
 import querystring from 'querystring';
 import express from 'express';
+*/
+
+const Spotify = require('spotify-web-api-node');
+const querystring = require('querystring');
+const express = require('express');
+
+require('dotenv').config();
 
 const router = new express.Router();
 
+
 // configure the express server
-const CLIENT_ID = process.env.client_id;
-const CLIENT_SECRET = process.env.client_secret;
-const REDIRECT_URI = process.env.redirect_uri || 'http://localhost:3000/callback';
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3001/callback';
 const STATE_KEY = 'spotify_auth_state';
 // your application requests authorization
 const scopes = ['user-read-private', 'user-read-email'];
+
 
 // configure spotify
 const spotifyApi = new Spotify({
@@ -21,7 +32,7 @@ const spotifyApi = new Spotify({
 
 /** Generates a random string containing numbers and letters of N characters */
 const generateRandomString = (N) => {
-  return Math.random().toString(36)+Array(N).join('0')).slice(2, N+2
+  return Math.random().toString(36)+Array(N).join('0').slice(2, N+2);
 };
 
 /**
@@ -31,7 +42,6 @@ const generateRandomString = (N) => {
  */
 router.get('/login', (_, res) => {
   const state = generateRandomString(16);
-  console.log(1);
   res.cookie(STATE_KEY, state);
   res.redirect(spotifyApi.createAuthorizeURL(scopes, state));
 });

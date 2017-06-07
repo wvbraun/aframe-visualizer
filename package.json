@@ -14,9 +14,11 @@
     "body-parser": "^1.17.2",
     "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
+    "dotenv": "^4.0.0",
     "express": "^4.15.3",
     "keymirror": "^0.1.1",
     "material-components-web": "^0.11.1",
+    "npm-run-all": "^4.0.2",
     "path": "^0.12.7",
     "querystring": "^0.2.0",
     "react": "^15.5.4",
@@ -32,6 +34,8 @@
     "spotify-web-api-node": "^2.4.0"
   },
   "devDependencies": {
+    "cors": "^2.8.3",
+    "morgan": "^1.8.2",
     "react-scripts": "0.9.5",
     "redux-immutable-state-invariant": "^2.0.0",
     "redux-mock-store": "^1.2.3"
@@ -42,5 +46,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }

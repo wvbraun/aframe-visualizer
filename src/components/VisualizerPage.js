@@ -8,6 +8,7 @@ import logo from './logo_red.svg';
 import logo_red from './Eiffel_Tower_Silhouette_Red.svg';
 import logo2 from './Detailed_Eiffel_Tower_Red2.svg';
 import * as visualizerActions from '../actions/visualizerActions';
+import * as spotifyActions from '../actions/spotifyActions';
 
 
 class VisualizerPage extends Component {
@@ -17,6 +18,10 @@ class VisualizerPage extends Component {
       return;
     }
     this.props.actions.addTrack(tracks[0]);
+  }
+
+  login = () => {
+    this.props.actions.userLogin();
   }
 
   render() {
@@ -40,6 +45,7 @@ class VisualizerPage extends Component {
               logo={logo2}
               model={tracks[1]}
               onDrop={this.addTracks}
+              onLogin={this.login}
             />
             <Visualizer
               className="visualizer"
@@ -63,8 +69,9 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
+  const actions = Object.assign({}, visualizerActions, spotifyActions);
   return {
-    actions: bindActionCreators(visualizerActions, dispatch)
+    actions: bindActionCreators(actions, dispatch)
   };
 };
 

@@ -34,6 +34,21 @@ class VisualizerApi {
       }, delay);
     });
   }
+
+  static spotifyLogin () {
+    const settings = {
+      method: 'GET',
+    };
+    return new Promise((resolve, reject) => {
+      fetch('http://localhost:3001/login', settings)
+        .then((response) => {
+          return response.json();
+        })
+        .catch((err) => {
+          throw(err);
+        });
+    });
+  }
 }
 
 export default VisualizerApi;
